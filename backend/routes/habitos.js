@@ -12,25 +12,28 @@ router.get('/', async (req, res) => {
     }
 });
 
-// 2. Crear un nuevo hábito (Alta)
-router.post('/', async (req, res) => {
-    const habito = new Habito({
-        nombre: req.body.nombre,
-        descripcion: req.body.descripcion
-    });
+router.patch('/:id/completar', async (req, res) => {
     try {
-        const nuevoHabito = await habito.save();
-        res.status(201).json(nuevoHabito);
-    } catch (err) {
-        res.status(400).json({ mensaje: err.message });
-    }
-});
+        const habito = await Habito.findById(req.params.id);
+        const ahora = new Date();
+        const ultimaActualizacion = habito.ultimaActualizacion ? new Date(habito.ultimaActualizacion) : null;
 
-// 3. Eliminar un hábito (Baja)
-router.delete('/:id', async (req, res) => {
-    try {
-        await Habito.findByIdAndDelete(req.params.id);
-        res.json({ mensaje: 'Hábito eliminado' });
+        if (!ultimaActualizacion) {
+            habito.diasConsecutivos = 1;
+        } else {
+            const diferenciaHoras = (ahora - ultimaActualizacion) / (1000 * 60 * 60);
+
+            if (diferenciaHoras > 48) {
+                habito.diasConsecutivos = 1;
+            } else if (diferenciaHoras > 24) {
+                habito.diasConsecutivos += 1;
+            }
+            
+        }
+
+        habito.ultimaActualizacion = ahora;
+        const actualizado = await habito.save();
+        res.json(actualizado);
     } catch (err) {
         res.status(500).json({ mensaje: err.message });
     }
