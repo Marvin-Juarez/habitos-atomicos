@@ -1,18 +1,33 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api/habitos';
+const urlBase = 'http://localhost:3000/api/habitos';
 
-
-export const fetchHabitos = createAsyncThunk('habitos/fetchHabitos', async () => {
-    const response = await axios.get(API_URL);
-    return response.data;
+// 1. Traer hábitos (ahora con Token)
+export const fetchHabitos = createAsyncThunk('habitos/fetchHabitos', async (_, { getState }) => {
+    const miToken = getState().auth.token; // Sacamos el token de Redux
+    const respuesta = await axios.get(urlBase, {
+        headers: { 'x-auth-token': miToken }
+    });
+    return respuesta.data;
 });
 
+// 2. Marcar hábito como Done (ahora con Token)
+export const completarHabito = createAsyncThunk('habitos/completarHabito', async (id, { getState }) => {
+    const miToken = getState().auth.token;
+    const respuesta = await axios.patch(`${urlBase}/${id}/completar`, {}, {
+        headers: { 'x-auth-token': miToken }
+    });
+    return respuesta.data;
+});
 
-export const completarHabito = createAsyncThunk('habitos/completarHabito', async (id) => {
-    const response = await axios.patch(`${API_URL}/${id}/completar`);
-    return response.data;
+// 3. NUEVO: Crear un hábito 
+export const crearNuevoHabito = createAsyncThunk('habitos/crear', async (datos, { getState }) => {
+    const miToken = getState().auth.token;
+    const respuesta = await axios.post(urlBase, datos, {
+        headers: { 'x-auth-token': miToken }
+    });
+    return respuesta.data;
 });
 
 const habitosSlice = createSlice({
@@ -27,8 +42,12 @@ const habitosSlice = createSlice({
             .addCase(completarHabito.fulfilled, (state, action) => {
                 const index = state.items.findIndex(h => h._id === action.payload._id);
                 if (index !== -1) {
-                    state.items[index] = action.payload; // Actualiza el hábito en la lista
+                    state.items[index] = action.payload;
                 }
+            })
+            // Agregamos el nuevo hábito a la lista visual
+            .addCase(crearNuevoHabito.fulfilled, (state, action) => {
+                state.items.push(action.payload);
             });
     },
 });
