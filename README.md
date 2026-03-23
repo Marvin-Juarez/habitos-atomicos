@@ -1,4 +1,4 @@
-# Reporte de Avances - Semana 5 (Marvin Juárez)
+# Reporte de Avances - Semana 5 
 
 Para esta entrega se completó la integración de seguridad y el flujo de usuario entre el Frontend y el Backend.
 
