@@ -9,4 +9,4 @@ Para esta entrega se completó la integración de seguridad y el flujo de usuari
 - **Agregar Hábitos:** Se integró un formulario en la página principal que permite crear nuevos hábitos vinculados directamente al ID del usuario que inició sesión.
 
 ---
-**Nota:** Aún sigo teniendo el mismo error de conección de MongoDB así que cambie la ip, red y descargue MongoDB pero no se solucionó.
+**Nota:** Aún sigo teniendo el mismo error de conección de MongoDB desde la tarea semana1. Cambié la ip, red wifi y descargue MongoDB pero aún sigue con el mismo error.
