@@ -10,15 +10,20 @@ conectarDB();
 
 // Middlewares
 app.use(cors());
-app.use(express.json());
-
-// Rutas (Semana 4)
+app.use(express.json()); 
+// Rutas
 app.use('/api/habitos', require('./routes/habitos'));
 
 // Ruta de prueba
 app.get('/', (req, res) => {
-    res.send('Servidor de Hábitos Atómicos funcionando 🚀');
+    res.send('Servidor de Hábitos Atómicos funcionando');
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;

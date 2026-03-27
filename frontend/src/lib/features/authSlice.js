@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Función para el login
+// Usamos la misma variable de entorno aquí
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+
 export const entrarAlSistema = createAsyncThunk('auth/entrar', async (datosUsuario) => {
-    // Llamamos al backend
-    const respuesta = await axios.post('http://localhost:3000/api/usuarios/login', datosUsuario);
+    // Apuntamos a la ruta de login usando la variable
+    const respuesta = await axios.post(`${API_URL}/usuarios/login`, datosUsuario);
     return respuesta.data; 
 });
 

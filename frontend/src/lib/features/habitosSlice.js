@@ -1,18 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const urlBase = 'http://localhost:3000/api/habitos';
+// Usamos variable de entorno para que en Vercel use la URL real
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const urlBase = `${API_URL}/habitos`;
 
-// 1. Traer hábitos (ahora con Token)
 export const fetchHabitos = createAsyncThunk('habitos/fetchHabitos', async (_, { getState }) => {
-    const miToken = getState().auth.token; // Sacamos el token de Redux
+    const miToken = getState().auth.token;
     const respuesta = await axios.get(urlBase, {
         headers: { 'x-auth-token': miToken }
     });
     return respuesta.data;
 });
 
-// 2. Marcar hábito como Done (ahora con Token)
 export const completarHabito = createAsyncThunk('habitos/completarHabito', async (id, { getState }) => {
     const miToken = getState().auth.token;
     const respuesta = await axios.patch(`${urlBase}/${id}/completar`, {}, {
@@ -21,7 +21,6 @@ export const completarHabito = createAsyncThunk('habitos/completarHabito', async
     return respuesta.data;
 });
 
-// 3. NUEVO: Crear un hábito 
 export const crearNuevoHabito = createAsyncThunk('habitos/crear', async (datos, { getState }) => {
     const miToken = getState().auth.token;
     const respuesta = await axios.post(urlBase, datos, {
@@ -45,7 +44,6 @@ const habitosSlice = createSlice({
                     state.items[index] = action.payload;
                 }
             })
-            // Agregamos el nuevo hábito a la lista visual
             .addCase(crearNuevoHabito.fulfilled, (state, action) => {
                 state.items.push(action.payload);
             });
